@@ -26,9 +26,45 @@
  *  使用贝塞尔曲线
  */
 - (void)animationFollowLeader{
-
     
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:self.view.center
+                                                        radius:50
+                                                    startAngle:0
+                                                      endAngle:2 * M_PI
+                                                     clockwise:YES];
+    
+    CAReplicatorLayer *replayer = [[CAReplicatorLayer alloc] init];
+    replayer.bounds = self.view.bounds;
+    replayer.position = self.view.center;
+    replayer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.75].CGColor;
+    replayer.cornerRadius = 10;
+    [self.view.layer addSublayer:replayer];
+    
+    // dot
+    CALayer *dot = [CALayer layer];
+    dot.bounds = CGRectMake(0, 0, 10, 10);
+    dot.position = CGPointMake(100, 40);
+    dot.borderWidth = 1;
+    dot.borderColor = [UIColor colorWithRed:255/255.0 green:255/255.0  blue:255/255.0  alpha:1.0].CGColor;
+    dot.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0  blue:255/255.0  alpha:0.8].CGColor;
+    dot.cornerRadius = 5;
+    /** shouldRasterize 
+        rasterizationScale
+     *  当shouldRasterize设成true时，layer被渲染成一个bitmap，并缓存起来，等下次使用时不会再重新去渲染了。实现圆角本身就是在做颜色混合（blending），如果每次页面出来时都blending，消耗太大，这时shouldRasterize = yes，下次就只是简单的从渲染引擎的cache里读取那张bitmap，节约系统资源。
+     */
+    dot.shouldRasterize = true;
+    dot.rasterizationScale = [UIScreen mainScreen].scale;
+    [replayer addSublayer:dot];
 
+    // animation
+    CAKeyframeAnimation *move = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    move.path = path.CGPath;
+    move.repeatCount = INFINITY;
+    move.duration = 4.0;
+    [dot addAnimation:move forKey:nil];
+    
+    replayer.instanceCount = 50;
+    replayer.instanceDelay = 0.1;
 }
 
 /**
@@ -51,6 +87,10 @@
     dot.borderColor = [UIColor colorWithRed:255/255.0 green:255/255.0  blue:255/255.0  alpha:1.0].CGColor;
     dot.backgroundColor = [UIColor colorWithRed:255/255.0 green:255/255.0  blue:255/255.0  alpha:0.8].CGColor;
     dot.cornerRadius = 10;
+    
+    dot.shouldRasterize = true;
+    dot.rasterizationScale = [UIScreen mainScreen].scale;
+
     [replayer addSublayer:dot];
     
     //
